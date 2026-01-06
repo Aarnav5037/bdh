@@ -106,7 +106,7 @@ class BDH(nn.Module):
         elif isinstance(module, nn.Embedding):
             nn.init.normal_(module.weight, mean=0.0, std=0.02)
 
-    def forward(self, idx, targets=None):
+    def forward(self, idx, targets=None, return_latent=False):
         C = self.config
 
         B, T = idx.size()
@@ -142,8 +142,14 @@ class BDH(nn.Module):
             )  # B, 1, T, D
             y = self.ln(yMLP)
             x = self.ln(x + y)
-
-        logits = x.view(B, T, D) @ self.lm_head
+        hidden_states = x.view(B, T, D)
+        
+        logits = hidden_states @ self.lm_head
+        
+        # If using for classification, you want the latent representation
+        if return_latent:
+            return hidden_states
+        #logits = x.view(B, T, D) @ self.lm_head
         loss = None
         if targets is not None:
             loss = F.cross_entropy(logits.view(-1, logits.size(-1)), targets.view(-1))
