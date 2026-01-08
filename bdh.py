@@ -14,7 +14,7 @@ class BDHConfig:
     n_embd: int = 256
     dropout: float = 0.1
     n_head: int = 4
-    mlp_internal_dim_multiplier: int = 128
+    mlp_internal_dim_multiplier: int = 32
     vocab_size: int = 256
 
 
